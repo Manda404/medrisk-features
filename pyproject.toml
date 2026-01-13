@@ -10,6 +10,7 @@ packages = [{ include = "medrisk_features", from = "src" }]
 python = "^3.9"
 pandas = "^2.0"
 numpy = "^1.24"
+loguru = "^0.7.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4"
