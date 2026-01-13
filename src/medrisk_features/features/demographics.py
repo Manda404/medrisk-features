@@ -45,6 +45,7 @@ class DemographicsFeatureEngineer:
         return df
 
     def _create_age_group_coarse(self, df: DataFrame) -> DataFrame:
+        
         bins = [0, 30, 60, np.inf]
         labels = ["Young", "Adult", "Senior"]
         df["age_group"] = pd.cut(df["Age"], bins=bins, labels=labels, right=False)
