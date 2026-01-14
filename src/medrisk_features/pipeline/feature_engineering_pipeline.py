@@ -13,7 +13,7 @@ from medrisk_features.features import (
     BehavioralFeatureEngineer,
     LifestyleFeatureEngineer,
 )
-
+from medrisk_features.validation import DataSchemaValidator
 
 class FeatureEngineeringPipeline:
     """
@@ -29,9 +29,32 @@ class FeatureEngineeringPipeline:
     def __init__(
         self,
         age_group_strategy: str = "detailed",
+        validate_schema: bool = True,
         logger=None,
     ):
+        """
+        Initialize the feature engineering pipeline.
+
+        Parameters
+        ----------
+        age_group_strategy : str, default="detailed"
+            Strategy used to bin age into categorical groups.
+            - "detailed": fine-grained age bands (<30, 30–39, ..., 80+)
+            - "coarse": broad categories (Young, Adult, Senior)
+
+        validate_schema : bool, default=True
+            Whether to validate the input dataset schema before
+            applying feature engineering. When enabled, the pipeline
+            checks for the presence of critical columns and raises
+            explicit errors if they are missing.
+
+        logger :
+            Optional Loguru logger instance. If None, a default
+            package logger is created and used.
+        """
         self.logger = logger or get_logger(self.__class__.__name__)
+        self.validate_schema = validate_schema
+        self.schema_validator = DataSchemaValidator(logger=self.logger)
 
         # Initialize feature blocks
         self.demographics = DemographicsFeatureEngineer(
@@ -61,6 +84,8 @@ class FeatureEngineeringPipeline:
         self.logger.info("Starting feature engineering pipeline...")
         df_enriched = df.copy(deep=True)
 
+        if self.validate_schema:
+            self.schema_validator.validate(df)
         # --------------------------------------------------
         # Step 0: Prevent data leakage
         # --------------------------------------------------
