@@ -1,1 +1,4 @@
 __pycache__
+# Poetry / packaging
+dist/
+*.egg-info/
